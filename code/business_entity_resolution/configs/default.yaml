@@ -1,0 +1,67 @@
+# All heavy data lives in the WSL filesystem (fast IO), never on /mnt/c.
+paths:
+  raw: ~/ber/data/raw/student_resource/dataset
+  validator: ~/ber/data/raw/student_resource/utils/validate_submission.py
+  data: ~/ber/data           # parquet of prepared inputs
+  artifacts: ~/ber/artifacts # intermediate stage outputs
+  output: ~/ber/output       # final TSVs (copied to repo output/ for packaging)
+seed: 42
+folds:
+  n_folds: 5
+  holdout_fold: 0
+dev:
+  s1_frac: 0.10
+  s23_frac: 0.10
+dict:
+  n_pairs: 3000000
+encoder:
+  n_pairs: 300000
+  batch_size: 128
+  max_len: 96
+  lr: 5.0e-5
+  temperature: 0.05
+  embed_batch_size: 1024
+blocking:
+  k_rec: 20
+  k_s1: 30
+  q_chunk: 1024
+  db_block: 1000000
+  max_block: 50
+prune:
+  k_rec: 3
+  k_s1: 10
+features:
+  chunk: 5000000
+model:
+  train_s1_frac: 0.35
+  drop_s1_frac: 0.19   # simulate test distractor density (5.75 rec/S1 vs 4.67 in train)
+  all_folds: true
+  stage_b: true
+  predict_test: false
+  params:
+    rounds: 1500
+    learning_rate: 0.1
+decide:
+  margins: [0.0, 0.05, 0.15]
+  taus: [0.3, 0.4, 0.5, 0.6, 0.7]
+  misses: [0.0, 0.05, 0.15]
+cross:
+  lo: 0.01
+  hi: 0.99
+  lr: 3.0e-5
+  batch_size: 64
+  score_batch_size: 512
+  max_len: 128
+  ext_lo: 0.001
+  ext_hi: 0.999
+geo:
+  min_p: 0.995
+  min_count: 500
+  min_share: 0.6
+adapt:
+  pos_p: 0.995
+  neg_p: 0.02
+  neg_cos: 0.8
+  n_each: 70000
+  lr: 1.0e-5
+  guard_n: 20000
